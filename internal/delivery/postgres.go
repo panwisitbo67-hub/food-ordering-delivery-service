@@ -226,9 +226,9 @@ func (p *PostgresStore) SetStatus(ctx context.Context, id, status string) (Deliv
 	if !NextStatus(current, status) {
 		return Delivery{}, ErrInvalidTransition
 	}
-	d, err := scanDelivery(tx.QueryRowContext(ctx, `UPDATE deliveries SET status=$2,updated_at=now(),
- picked_up_at=CASE WHEN $2='picked_up' THEN now() ELSE picked_up_at END,
- delivered_at=CASE WHEN $2='delivered' THEN now() ELSE delivered_at END
+	d, err := scanDelivery(tx.QueryRowContext(ctx, `UPDATE deliveries SET status=$2::text,updated_at=now(),
+ picked_up_at=CASE WHEN $2::text='picked_up' THEN now() ELSE picked_up_at END,
+ delivered_at=CASE WHEN $2::text='delivered' THEN now() ELSE delivered_at END
  WHERE id=$1 RETURNING `+columns, id, status))
 	if err != nil {
 		return Delivery{}, err
